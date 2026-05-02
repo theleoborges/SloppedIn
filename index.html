@@ -584,7 +584,8 @@
     .file-grid { grid-template-columns: repeat(2, 1fr); }
     .howto-inner { grid-template-columns: 1fr; gap: 32px; }
     .share-inner { grid-template-columns: 1fr; }
-    .why-inner { grid-template-columns: 1fr; gap: 32px; justify-items: center; }
+    .why-inner { grid-template-columns: minmax(0, 1fr); gap: 32px; justify-items: center; }
+    .why-embed { width: 100%; }
     nav { padding: 16px 20px; }
     .hero, .downloads, .howto, .share, .why { padding-left: 20px; padding-right: 20px; }
     .x { display: none; }
