@@ -427,79 +427,55 @@
     font-size: 13px;
   }
 
-  /* — Reaction strip (parody of generic reaction bars) — */
-  .reaction-strip {
+  /* — Why SloppedIn — */
+  .why {
     background: var(--paper-2);
-    padding: 56px 32px 64px;
+    padding: 80px 32px;
     border-top: 2px solid var(--ink);
     border-bottom: 2px solid var(--ink);
   }
-  .reaction-inner {
+  .why-inner {
     max-width: 1200px; margin: 0 auto;
-    display: flex; flex-direction: column; align-items: center; gap: 28px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 64px;
+    align-items: center;
   }
-  .reaction-inner .label {
+  .why .label {
     font-family: "JetBrains Mono", monospace;
     font-size: 12px;
     color: var(--ink-soft);
     text-transform: uppercase;
     letter-spacing: 0.12em;
+    display: inline-block;
+    margin-bottom: 18px;
   }
-  .reactions {
-    display: flex; gap: 14px; align-items: center;
-    background: var(--paper);
-    padding: 14px 18px;
-    border: 2px solid var(--ink);
-    border-radius: 999px;
-    box-shadow: 4px 4px 0 var(--ink);
-  }
-  .reactions .r {
-    width: 56px; height: 56px;
-    border-radius: 50%;
-    display: grid; place-items: center;
-    font-size: 26px;
-    border: 2px solid var(--ink);
-    background: var(--paper);
-    transition: transform 160ms ease;
-    user-select: none;
-  }
-  .reactions .r:hover { transform: translateY(-6px) scale(1.1); }
-  .reactions .r.thumb { background: #4D9CE8; }
-  .reactions .r.clap  { background: #6FB36F; }
-  .reactions .r.heart { background: #E8A38A; }
-  .reactions .r.love  { background: #E8624A; }
-  .reactions .r.bulb  { background: #F2C04A; }
-  .reactions .r.slop  {
-    background: var(--teal);
-    width: 64px; height: 64px;
-    border: 3px solid var(--ink);
-    overflow: hidden;
-    position: relative;
-    box-shadow: 0 0 0 4px var(--slime), 0 0 0 5px var(--ink);
-  }
-  .reactions .r.slop img { width: 100%; height: 100%; object-fit: cover; }
-  .reactions .r.slop::after {
-    content: "NEW";
-    position: absolute;
-    top: -8px; right: -16px;
-    background: var(--hot);
-    color: var(--paper);
-    font-family: "JetBrains Mono", monospace;
-    font-size: 9px;
+  .why h2 {
+    font-size: clamp(32px, 4vw, 52px);
     font-weight: 700;
-    padding: 2px 6px;
-    border-radius: 4px;
-    transform: rotate(8deg);
-    border: 1.5px solid var(--ink);
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin: 0 0 24px;
   }
-  .reaction-caption {
-    font-family: "JetBrains Mono", monospace;
-    font-size: 12px;
+  .why h2 .green { color: var(--teal-deep); }
+  .why p {
+    font-size: 17px;
+    line-height: 1.55;
     color: var(--ink-soft);
-    text-align: center;
-    line-height: 1.6;
+    margin: 0 0 16px;
+    max-width: 460px;
   }
-  .reaction-caption .arrow { color: var(--hot); }
+  .why p b { color: var(--ink); }
+  .why-embed {
+    border: 2px solid var(--ink);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 6px 6px 0 var(--ink);
+    background: var(--paper);
+    width: 504px;
+    max-width: 100%;
+  }
+  .why-embed iframe { display: block; width: 100%; height: 603px; border: 0; }
 
   /* — Share — */
   .share {
@@ -584,10 +560,9 @@
     .file-grid { grid-template-columns: repeat(2, 1fr); }
     .howto-inner { grid-template-columns: 1fr; gap: 32px; }
     .share-inner { grid-template-columns: 1fr; }
-    .reactions .r { width: 44px; height: 44px; font-size: 20px; }
-    .reactions .r.slop { width: 52px; height: 52px; }
+    .why-inner { grid-template-columns: 1fr; gap: 32px; justify-items: center; }
     nav { padding: 16px 20px; }
-    .hero, .downloads, .howto, .share, .reaction-strip { padding-left: 20px; padding-right: 20px; }
+    .hero, .downloads, .howto, .share, .why { padding-left: 20px; padding-right: 20px; }
     .x { display: none; }
   }
 </style>
@@ -614,9 +589,9 @@
     <span><span class="b1">Slopped</span><span class="b2">In</span></span>
   </div>
   <div class="nav-right">
-    <a class="pill live" href="#downloads">v1.0 · live</a>
     <a class="pill" href="#how-to">how to use</a>
     <a class="pill" href="#downloads">download ↓</a>
+    <a class="pill" href="#why">backstory</a>
   </div>
 </nav>
 
@@ -707,23 +682,23 @@
   </div>
 </section>
 
-<!-- Reaction strip -->
-<section class="reaction-strip">
-  <div class="reaction-inner">
-    <span class="label">Suggested usage // hover me</span>
-    <div class="reactions" role="list">
-      <div class="r thumb" role="listitem" aria-label="like">👍</div>
-      <div class="r clap" role="listitem" aria-label="celebrate">👏</div>
-      <div class="r heart" role="listitem" aria-label="support">🤲</div>
-      <div class="r love" role="listitem" aria-label="love">❤</div>
-      <div class="r bulb" role="listitem" aria-label="insightful">💡</div>
-      <div class="r slop" role="listitem" aria-label="slop">
-        <img src="public/assets/sloppedin-logo.png" alt="" />
-      </div>
+<!-- Why SloppedIn -->
+<section class="why" id="why">
+  <div class="why-inner">
+    <div class="why-copy">
+      <span class="label">// the backstory</span>
+      <h2>Why <span class="green">SloppedIn</span>.</h2>
+      <p>
+        Back in 2025 I suggested a new reaction so LinkedIn would <em>do something</em>
+        about all the slop. That didn't work.
+      </p>
+      <p>
+        So now we have the <b>SloppedIn</b> badge. Use it well. Call out the slop.
+      </p>
     </div>
-    <p class="reaction-caption">
-      <span class="arrow">↑</span> the only honest one in the row
-    </p>
+    <div class="why-embed">
+      <iframe src="https://www.linkedin.com/embed/feed/update/urn:li:share:7327565951212707840" height="603" width="504" frameborder="0" allowfullscreen="" title="Embedded LinkedIn post by Leo Borges"></iframe>
+    </div>
   </div>
 </section>
 
