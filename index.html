@@ -1,0 +1,847 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SloppedIn — the AI Slop reaction the internet needs</title>
+<meta name="description" content="A reaction icon for when you spot AI slop in the wild. Free to download. Free to share. Free to spam in the comments." />
+<link rel="icon" href="public/assets/sloppedin-logo.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --teal: #3FAFA3;
+    --teal-deep: #2C8A80;
+    --slime: #C8E8B0;
+    --slime-soft: #E5F2D6;
+    --ink: #0F2A28;
+    --ink-soft: #1F4D4A;
+    --paper: #F4F1E8;
+    --paper-2: #ECE7D6;
+    --hot: #FF5C3A;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "Space Grotesk", system-ui, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  .mono { font-family: "JetBrains Mono", ui-monospace, monospace; }
+
+  /* — Sticky banner — */
+  .ticker {
+    background: var(--ink);
+    color: var(--slime);
+    border-bottom: 2px solid var(--ink);
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 10px 0;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+  }
+  .ticker-track {
+    display: inline-flex;
+    gap: 36px;
+    padding-left: 36px;
+    animation: scroll 40s linear infinite;
+  }
+  .ticker span { display: inline-flex; align-items: center; gap: 14px; }
+  .ticker .dot { color: var(--teal); }
+  @keyframes scroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  /* — Top nav — */
+  nav {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 22px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  .brand {
+    display: flex; align-items: center; gap: 12px;
+    font-weight: 700; font-size: 22px; letter-spacing: -0.02em;
+  }
+  .brand img { width: 36px; height: 36px; border-radius: 50%; display: block; }
+  .brand .b1 { color: var(--ink); }
+  .brand .b2 { color: var(--teal-deep); }
+  .nav-right { display: flex; align-items: center; gap: 8px; font-family: "JetBrains Mono", monospace; font-size: 12px; }
+  .pill {
+    border: 1.5px solid var(--ink);
+    background: var(--paper);
+    border-radius: 999px;
+    padding: 7px 12px;
+    color: var(--ink);
+    text-decoration: none;
+    transition: transform 120ms ease, background 120ms ease;
+  }
+  .pill:hover { background: var(--slime); transform: translate(-1px, -1px); }
+  .pill.live::before {
+    content: "";
+    display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+    background: var(--hot); margin-right: 8px;
+    vertical-align: 1px;
+    animation: pulse 1.4s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+  /* — Hero — */
+  .hero {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px 32px 80px;
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 48px;
+    align-items: center;
+  }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    color: var(--ink-soft);
+    background: var(--slime-soft);
+    border: 1px solid var(--slime);
+    padding: 8px 12px;
+    border-radius: 999px;
+    margin-bottom: 22px;
+  }
+  .eyebrow .blob {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--teal);
+  }
+  h1 {
+    font-size: clamp(44px, 6.4vw, 88px);
+    font-weight: 700;
+    letter-spacing: -0.035em;
+    line-height: 0.95;
+    margin: 0 0 22px;
+  }
+  h1 .strike { color: var(--ink); position: relative; display: inline-block; }
+  h1 .strike::after {
+    content: "";
+    position: absolute;
+    left: -4px; right: -4px;
+    top: 56%;
+    height: 6px;
+    background: var(--hot);
+    transform: rotate(-2deg);
+  }
+  h1 .green { color: var(--teal-deep); }
+  .lede {
+    font-size: 19px;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    max-width: 520px;
+    margin: 0 0 32px;
+  }
+  .lede b { color: var(--ink); font-weight: 600; }
+
+  .cta-row {
+    display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 28px;
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    border: 2px solid var(--ink);
+    border-radius: 14px;
+    padding: 14px 20px;
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    background: var(--paper);
+    color: var(--ink);
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: 4px 4px 0 var(--ink);
+    transition: transform 120ms ease, box-shadow 120ms ease;
+  }
+  .btn:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--ink); }
+  .btn:active { transform: translate(2px, 2px); box-shadow: 0 0 0 var(--ink); }
+  .btn.primary { background: var(--teal); color: var(--paper); }
+  .btn.primary:hover { background: var(--teal-deep); }
+  .btn .kbd {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    border: 1px solid currentColor;
+    border-radius: 4px;
+    padding: 1px 5px;
+    opacity: 0.7;
+  }
+
+  .meta-row {
+    display: flex; flex-wrap: wrap; gap: 18px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+  .meta-row span { display: inline-flex; align-items: center; gap: 6px; }
+  .meta-row .check { color: var(--teal-deep); font-weight: 700; }
+
+  /* — Logo showcase — */
+  .showcase {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    background: var(--paper-2);
+    border: 2px solid var(--ink);
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 8px 8px 0 var(--ink);
+  }
+  .showcase::before {
+    /* dotted grid */
+    content: "";
+    position: absolute; inset: 0;
+    background-image: radial-gradient(var(--ink) 1px, transparent 1px);
+    background-size: 18px 18px;
+    opacity: 0.08;
+  }
+  .showcase-tag {
+    position: absolute;
+    top: 16px; left: 16px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    background: var(--ink); color: var(--paper);
+    padding: 5px 10px;
+    border-radius: 999px;
+    z-index: 4;
+  }
+  .showcase-size {
+    position: absolute;
+    top: 16px; right: 16px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    color: var(--ink-soft);
+    z-index: 4;
+  }
+  .showcase-logo {
+    position: absolute;
+    inset: 0;
+    display: grid; place-items: center;
+    z-index: 2;
+  }
+  .showcase-logo img {
+    width: 64%;
+    height: auto;
+    filter: drop-shadow(0 12px 0 rgba(15, 42, 40, 0.12));
+    animation: bob 5s ease-in-out infinite;
+  }
+  @keyframes bob {
+    0%,100% { transform: translateY(0) rotate(-1deg); }
+    50%     { transform: translateY(-10px) rotate(1deg); }
+  }
+  .corner-mark {
+    position: absolute;
+    bottom: 16px; left: 16px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    color: var(--ink-soft);
+    z-index: 4;
+  }
+  .corner-spec {
+    position: absolute;
+    bottom: 16px; right: 16px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    color: var(--ink-soft);
+    text-align: right;
+    z-index: 4;
+  }
+  /* corner crosshairs */
+  .x { position: absolute; width: 14px; height: 14px; z-index: 3; }
+  .x::before, .x::after { content: ""; position: absolute; background: var(--ink); }
+  .x::before { left: 50%; top: 0; bottom: 0; width: 1.5px; transform: translateX(-50%); }
+  .x::after  { top: 50%; left: 0; right: 0; height: 1.5px; transform: translateY(-50%); }
+  .x.tl { top: 64px; left: 64px; } .x.tr { top: 64px; right: 64px; }
+  .x.bl { bottom: 64px; left: 64px; } .x.br { bottom: 64px; right: 64px; }
+
+  /* — Section divider with thick rule — */
+  .rule {
+    border-top: 2px solid var(--ink);
+    margin: 0;
+  }
+
+  /* — Download grid — */
+  .downloads {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 80px 32px;
+  }
+  .downloads-inner {
+    max-width: 1200px; margin: 0 auto;
+  }
+  .section-head {
+    display: flex; justify-content: space-between; align-items: end;
+    gap: 24px; margin-bottom: 40px; flex-wrap: wrap;
+  }
+  .section-head h2 {
+    font-size: clamp(32px, 4vw, 52px);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin: 0;
+  }
+  .section-head h2 .accent { color: var(--slime); }
+  .section-head p {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 13px;
+    color: var(--slime);
+    opacity: 0.8;
+    max-width: 380px;
+    margin: 0;
+    line-height: 1.55;
+  }
+
+  .file-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  .file-card {
+    background: var(--ink-soft);
+    border: 1.5px solid #2a5e5a;
+    border-radius: 18px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+    cursor: pointer;
+    color: inherit;
+    text-decoration: none;
+  }
+  .file-card:hover {
+    transform: translateY(-4px);
+    background: #245955;
+    border-color: var(--teal);
+  }
+  .file-thumb {
+    aspect-ratio: 1;
+    background: var(--paper-2);
+    border-radius: 10px;
+    display: grid; place-items: center;
+    overflow: hidden;
+    position: relative;
+  }
+  .file-thumb img { width: 70%; height: auto; }
+  .file-thumb.dark { background: var(--ink); border: 1px solid #2a5e5a; }
+  .file-thumb.transparent {
+    background-image:
+      linear-gradient(45deg, #2a5e5a 25%, transparent 25%),
+      linear-gradient(-45deg, #2a5e5a 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #2a5e5a 75%),
+      linear-gradient(-45deg, transparent 75%, #2a5e5a 75%);
+    background-size: 14px 14px;
+    background-position: 0 0, 0 7px, 7px -7px, -7px 0;
+    background-color: #1a3835;
+  }
+  .file-meta {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+  }
+  .file-meta .name { color: var(--paper); font-weight: 600; }
+  .file-meta .ext { color: var(--slime); opacity: 0.7; text-transform: uppercase; }
+  .file-bottom {
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    color: var(--slime); opacity: 0.7;
+  }
+  .file-bottom .dl {
+    background: var(--slime); color: var(--ink);
+    padding: 5px 10px; border-radius: 6px;
+    font-weight: 600;
+    transition: background 120ms ease;
+  }
+  .file-card:hover .file-bottom .dl { background: var(--teal); color: var(--paper); }
+
+  /* — Manifesto / how to use — */
+  .howto {
+    background: var(--paper);
+    padding: 80px 32px;
+  }
+  .howto-inner {
+    max-width: 1200px; margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 56px;
+    align-items: start;
+  }
+  .howto h2 {
+    font-size: clamp(32px, 4vw, 52px);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin: 0 0 24px;
+  }
+  .howto h2 .green { color: var(--teal-deep); }
+  .howto p {
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    margin: 0 0 18px;
+    max-width: 480px;
+  }
+  .steps {
+    list-style: none; padding: 0; margin: 0;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .step {
+    display: flex; gap: 18px;
+    border: 2px solid var(--ink);
+    border-radius: 16px;
+    padding: 20px;
+    background: var(--paper);
+    box-shadow: 4px 4px 0 var(--ink);
+  }
+  .step .num {
+    flex: 0 0 44px;
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: var(--teal);
+    color: var(--paper);
+    display: grid; place-items: center;
+    font-weight: 700;
+    font-size: 18px;
+    border: 2px solid var(--ink);
+  }
+  .step.s2 .num { background: var(--slime); color: var(--ink); }
+  .step.s3 .num { background: var(--hot); color: var(--paper); }
+  .step .body { flex: 1; }
+  .step .body strong { display: block; font-size: 17px; margin-bottom: 4px; letter-spacing: -0.01em; }
+  .step .body span { color: var(--ink-soft); font-size: 14px; line-height: 1.5; }
+  .step .body code {
+    font-family: "JetBrains Mono", monospace;
+    background: var(--slime-soft);
+    border: 1px solid var(--slime);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+  }
+
+  /* — Reaction strip (parody of generic reaction bars) — */
+  .reaction-strip {
+    background: var(--paper-2);
+    padding: 56px 32px 64px;
+    border-top: 2px solid var(--ink);
+    border-bottom: 2px solid var(--ink);
+  }
+  .reaction-inner {
+    max-width: 1200px; margin: 0 auto;
+    display: flex; flex-direction: column; align-items: center; gap: 28px;
+  }
+  .reaction-inner .label {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+  .reactions {
+    display: flex; gap: 14px; align-items: center;
+    background: var(--paper);
+    padding: 14px 18px;
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    box-shadow: 4px 4px 0 var(--ink);
+  }
+  .reactions .r {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    display: grid; place-items: center;
+    font-size: 26px;
+    border: 2px solid var(--ink);
+    background: var(--paper);
+    transition: transform 160ms ease;
+    user-select: none;
+  }
+  .reactions .r:hover { transform: translateY(-6px) scale(1.1); }
+  .reactions .r.thumb { background: #4D9CE8; }
+  .reactions .r.clap  { background: #6FB36F; }
+  .reactions .r.heart { background: #E8A38A; }
+  .reactions .r.love  { background: #E8624A; }
+  .reactions .r.bulb  { background: #F2C04A; }
+  .reactions .r.slop  {
+    background: var(--teal);
+    width: 64px; height: 64px;
+    border: 3px solid var(--ink);
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 0 0 4px var(--slime), 0 0 0 5px var(--ink);
+  }
+  .reactions .r.slop img { width: 100%; height: 100%; object-fit: cover; }
+  .reactions .r.slop::after {
+    content: "NEW";
+    position: absolute;
+    top: -8px; right: -16px;
+    background: var(--hot);
+    color: var(--paper);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transform: rotate(8deg);
+    border: 1.5px solid var(--ink);
+  }
+  .reaction-caption {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    color: var(--ink-soft);
+    text-align: center;
+    line-height: 1.6;
+  }
+  .reaction-caption .arrow { color: var(--hot); }
+
+  /* — Share — */
+  .share {
+    padding: 64px 32px;
+    background: var(--paper);
+  }
+  .share-inner {
+    max-width: 1200px; margin: 0 auto;
+    border: 2px solid var(--ink);
+    border-radius: 24px;
+    padding: 36px;
+    background: var(--slime-soft);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 32px;
+    align-items: center;
+    box-shadow: 6px 6px 0 var(--ink);
+  }
+  .share h3 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0 0 8px;
+  }
+  .share p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 15px;
+    max-width: 560px;
+    line-height: 1.5;
+  }
+  .share-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  /* — Footer — */
+  footer {
+    padding: 40px 32px 60px;
+    background: var(--paper);
+    border-top: 1px solid rgba(15, 42, 40, 0.15);
+  }
+  .footer-inner {
+    max-width: 1200px; margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 16px; flex-wrap: wrap;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+  .footer-inner a { color: var(--ink); text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+  .socials { display: inline-flex; gap: 8px; align-items: center; }
+  .socials a {
+    width: 34px; height: 34px;
+    display: inline-grid; place-items: center;
+    border: 1.5px solid var(--ink);
+    border-radius: 50%;
+    color: var(--ink);
+    background: var(--paper);
+    text-decoration: none;
+    transition: transform 120ms ease, background 120ms ease, color 120ms ease;
+  }
+  .socials a:hover { background: var(--ink); color: var(--paper); transform: translate(-1px, -1px); }
+  .socials svg { width: 16px; height: 16px; display: block; }
+
+  /* Toast */
+  .toast {
+    position: fixed; left: 50%; bottom: 28px;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--ink); color: var(--paper);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 13px;
+    padding: 12px 18px;
+    border-radius: 999px;
+    border: 2px solid var(--slime);
+    opacity: 0;
+    transition: opacity 200ms ease, transform 200ms ease;
+    pointer-events: none;
+    z-index: 100;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; padding-bottom: 56px; }
+    .file-grid { grid-template-columns: repeat(2, 1fr); }
+    .howto-inner { grid-template-columns: 1fr; gap: 32px; }
+    .share-inner { grid-template-columns: 1fr; }
+    .reactions .r { width: 44px; height: 44px; font-size: 20px; }
+    .reactions .r.slop { width: 52px; height: 52px; }
+    nav { padding: 16px 20px; }
+    .hero, .downloads, .howto, .share, .reaction-strip { padding-left: 20px; padding-right: 20px; }
+    .x { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Ticker -->
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-track">
+    <span><span class="dot">●</span> CERTIFIED 100% HUMAN-MADE OUTRAGE</span>
+    <span><span class="dot">●</span> NO LLM WAS HARMED IN THE MAKING OF THIS LOGO</span>
+    <span><span class="dot">●</span> FREE TO DOWNLOAD · FREE TO POST · FREE TO SPAM</span>
+    <span><span class="dot">●</span> RECOMMENDED DAILY DOSE: 1 SLOP REACTION PER FEED REFRESH</span>
+    <span><span class="dot">●</span> CERTIFIED 100% HUMAN-MADE OUTRAGE</span>
+    <span><span class="dot">●</span> NO LLM WAS HARMED IN THE MAKING OF THIS LOGO</span>
+    <span><span class="dot">●</span> FREE TO DOWNLOAD · FREE TO POST · FREE TO SPAM</span>
+    <span><span class="dot">●</span> RECOMMENDED DAILY DOSE: 1 SLOP REACTION PER FEED REFRESH</span>
+  </div>
+</div>
+
+<nav>
+  <div class="brand">
+    <img src="public/assets/sloppedin-logo.png" alt="" />
+    <span><span class="b1">Slopped</span><span class="b2">In</span></span>
+  </div>
+  <div class="nav-right">
+    <a class="pill live" href="#downloads">v1.0 · live</a>
+    <a class="pill" href="#how-to">how to use</a>
+    <a class="pill" href="#downloads">download ↓</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div>
+    <div class="eyebrow">
+      <span class="blob"></span>
+      A REACTION FOR THE TIMELINE WE'RE LIVING IN
+    </div>
+    <h1>
+      The reaction <br />
+      your feed <span class="strike">deserves</span> <span class="green">desperately needs.</span>
+    </h1>
+    <p class="lede">
+      Every scroll: a thought leader's "powerful" 12-point thread, a stock photo that's almost real,
+      a hook that ends with "and here's why that matters." <b>You know it when you see it.</b>
+      Now you have a button for it.
+    </p>
+
+    <div class="cta-row">
+      <a class="btn primary" href="#downloads">
+        Grab the logo
+        <span class="kbd">↓</span>
+      </a>
+      <button class="btn" id="copy-link-btn" type="button">
+        Copy share link
+        <span class="kbd">⌘ C</span>
+      </button>
+    </div>
+
+    <div class="meta-row">
+      <span><span class="check">✓</span> PNG · SVG · transparent</span>
+      <span><span class="check">✓</span> 1× / 2× / 4×</span>
+      <span><span class="check">✓</span> Avatar-ready</span>
+      <span><span class="check">✓</span> Free forever</span>
+    </div>
+  </div>
+
+  <div class="showcase" aria-label="SloppedIn logo preview">
+    <span class="showcase-tag mono">sloppedin-logo.png</span>
+    <span class="showcase-size mono">1254 × 1254</span>
+    <span class="x tl"></span><span class="x tr"></span>
+    <span class="x bl"></span><span class="x br"></span>
+    <div class="showcase-logo">
+      <img src="public/assets/sloppedin-logo.png" alt="SloppedIn slime mascot" />
+    </div>
+    <span class="corner-mark mono">◎ master · v1</span>
+    <span class="corner-spec mono">teal #3FAFA3<br/>slime #C8E8B0</span>
+  </div>
+</section>
+
+<hr class="rule" />
+
+<!-- Downloads -->
+<section class="downloads" id="downloads">
+  <div class="downloads-inner">
+    <div class="section-head">
+      <h2>Pick your <span class="accent">poison.</span></h2>
+      <p>// All files are the same icon at different sizes and formats.<br/>// Right-click → save, or just hit the button.</p>
+    </div>
+
+    <div class="file-grid">
+      <a class="file-card" href="public/assets/sloppedin-logo.png" download="sloppedin-1254.png" data-toast="Downloading PNG @ 1254px">
+        <div class="file-thumb"><img src="public/assets/sloppedin-logo.png" alt="" /></div>
+        <div class="file-meta"><span class="name">sloppedin-1254</span><span class="ext">PNG</span></div>
+        <div class="file-bottom"><span>1254 × 1254</span><span class="dl">Download</span></div>
+      </a>
+
+      <a class="file-card" href="public/assets/sloppedin-512.png" download="sloppedin-512.png" data-toast="Downloading PNG @ 512px">
+        <div class="file-thumb"><img src="public/assets/sloppedin-logo.png" alt="" style="width:55%;" /></div>
+        <div class="file-meta"><span class="name">sloppedin-512</span><span class="ext">PNG</span></div>
+        <div class="file-bottom"><span>512 × 512</span><span class="dl">Download</span></div>
+      </a>
+
+      <a class="file-card" href="public/assets/sloppedin-256.png" download="sloppedin-256.png" data-toast="Downloading PNG @ 256px">
+        <div class="file-thumb"><img src="public/assets/sloppedin-logo.png" alt="" style="width:42%;" /></div>
+        <div class="file-meta"><span class="name">sloppedin-256</span><span class="ext">PNG</span></div>
+        <div class="file-bottom"><span>256 × 256</span><span class="dl">Download</span></div>
+      </a>
+
+      <a class="file-card" href="public/assets/sloppedin-circle.svg" download="sloppedin.svg" data-toast="Downloading vector SVG">
+        <div class="file-thumb transparent"><img src="public/assets/sloppedin-logo.png" alt="" style="width:62%;" /></div>
+        <div class="file-meta"><span class="name">sloppedin-vector</span><span class="ext">SVG</span></div>
+        <div class="file-bottom"><span>scalable · ∞</span><span class="dl">Download</span></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Reaction strip -->
+<section class="reaction-strip">
+  <div class="reaction-inner">
+    <span class="label">Suggested usage // hover me</span>
+    <div class="reactions" role="list">
+      <div class="r thumb" role="listitem" aria-label="like">👍</div>
+      <div class="r clap" role="listitem" aria-label="celebrate">👏</div>
+      <div class="r heart" role="listitem" aria-label="support">🤲</div>
+      <div class="r love" role="listitem" aria-label="love">❤</div>
+      <div class="r bulb" role="listitem" aria-label="insightful">💡</div>
+      <div class="r slop" role="listitem" aria-label="slop">
+        <img src="public/assets/sloppedin-logo.png" alt="" />
+      </div>
+    </div>
+    <p class="reaction-caption">
+      <span class="arrow">↑</span> the only honest one in the row
+    </p>
+  </div>
+</section>
+
+<!-- How to use -->
+<section class="howto" id="how-to">
+  <div class="howto-inner">
+    <div>
+      <h2>How to <span class="green">SloppedIn</span> someone.</h2>
+      <p>
+        Three steps. No nuance required. You'll know exactly when to use it &mdash;
+        the post will tell you.
+      </p>
+      <p style="font-size:14px; opacity:0.75;">
+        // works on any platform that allows images in comments. We don't make the rules. We just react to them.
+      </p>
+    </div>
+    <ol class="steps">
+      <li class="step s1">
+        <div class="num">1</div>
+        <div class="body">
+          <strong>Spot the slop.</strong>
+          <span>"As a CEO, I once fired an intern who turned out to be my future wife. Here's what it taught me about Q3 OKRs." &mdash; <code>this is slop.</code></span>
+        </div>
+      </li>
+      <li class="step s2">
+        <div class="num">2</div>
+        <div class="body">
+          <strong>Save the icon.</strong>
+          <span>Pick your size up there ↑. Keep it in your camera roll next to receipts and screenshots of your enemies.</span>
+        </div>
+      </li>
+      <li class="step s3">
+        <div class="num">3</div>
+        <div class="body">
+          <strong>Reply with it.</strong>
+          <span>No words needed. The icon does the talking. The original poster will know. Their ghostwriter will also know.</span>
+        </div>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- Share -->
+<section class="share">
+  <div class="share-inner">
+    <div>
+      <h3>Spread the slop.</h3>
+      <p>
+        Forward this page to one (1) friend who refreshes their feed too much. They'll thank you with a slop reaction, which is the highest form of gratitude in 2026.
+      </p>
+    </div>
+    <div class="share-actions">
+      <button class="btn" type="button" data-share="copy">Copy link</button>
+      <a class="btn primary" href="#" id="share-x" target="_blank" rel="noopener">Post about it</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <span>© 2026 SloppedIn · a parody · made by <a href="https://leonardoborges.com" target="_blank" rel="noopener">Leo Borges</a>, for humans</span>
+    <span class="socials">
+      <a href="https://www.linkedin.com/in/theleoborges/" target="_blank" rel="noopener" aria-label="LinkedIn">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.37V9h3.41v1.56h.05c.47-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z"/></svg>
+      </a>
+      <a href="https://x.com/theleoborges" target="_blank" rel="noopener" aria-label="X">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.45-6.231zm-1.161 17.52h1.833L7.084 4.126H5.117l11.966 15.644z"/></svg>
+      </a>
+      <a href="https://www.threads.com/theleoborges" target="_blank" rel="noopener" aria-label="Threads">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.46 11.13a8.6 8.6 0 0 0-.32-.15c-.19-3.5-2.1-5.5-5.31-5.52h-.04c-1.92 0-3.51.82-4.5 2.31l1.77 1.21c.74-1.12 1.9-1.36 2.74-1.36h.03c1.04.01 1.83.31 2.34.9.37.43.62 1.02.74 1.77-.92-.16-1.92-.2-2.99-.14-3.01.17-4.95 1.93-4.82 4.37.07 1.24.69 2.3 1.74 2.99.89.58 2.04.87 3.23.8 1.58-.09 2.81-.69 3.68-1.79.66-.83 1.07-1.91 1.26-3.27.74.45 1.29 1.04 1.6 1.75.51 1.21.54 3.2-1.08 4.82-1.42 1.42-3.13 2.03-5.71 2.05-2.86-.02-5.03-.94-6.44-2.74C5.06 17.43 4.4 15.27 4.37 12c.03-3.27.69-5.43 2.04-7.13C7.82 3.07 9.99 2.15 12.85 2.13c2.88.02 5.08.95 6.55 2.75.72.89 1.27 2 1.62 3.31l1.96-.52c-.43-1.62-1.11-3.01-2.05-4.16C19.07 1.21 16.39.04 12.86.02h-.01C9.32.04 6.66 1.22 4.97 3.51 3.46 5.55 2.69 8.39 2.66 12c.03 3.61.8 6.45 2.31 8.49 1.69 2.29 4.35 3.47 7.88 3.49h.01c3.14-.02 5.36-.85 7.18-2.67 2.39-2.38 2.32-5.36 1.53-7.19-.57-1.31-1.65-2.38-3.13-3.09zm-5.52 4.41c-1.32.07-2.69-.52-2.76-1.79-.05-.94.67-1.99 2.84-2.12.25-.01.49-.02.73-.02.79 0 1.53.08 2.2.22-.25 3.13-1.72 3.65-3.01 3.71z"/></svg>
+      </a>
+    </span>
+    <span>not affiliated with any platform · all trademarks belong to their respective overlords</span>
+  </div>
+</footer>
+
+<div class="toast" id="toast">Link copied to clipboard</div>
+
+<script>
+  // Toast
+  const toast = document.getElementById('toast');
+  let toastT;
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastT);
+    toastT = setTimeout(() => toast.classList.remove('show'), 1800);
+  }
+
+  // Download cards
+  document.querySelectorAll('.file-card[data-toast]').forEach(card => {
+    card.addEventListener('click', () => showToast(card.dataset.toast));
+  });
+
+  // Copy link buttons
+  function copyLink() {
+    const url = window.location.href;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(url).then(() => showToast('Link copied · go forth and slop'));
+    } else {
+      showToast('Link copied · go forth and slop');
+    }
+  }
+  document.getElementById('copy-link-btn').addEventListener('click', copyLink);
+  document.querySelectorAll('[data-share="copy"]').forEach(b => b.addEventListener('click', copyLink));
+
+  // Tweet/post intent
+  const shareText = encodeURIComponent("I made a button for AI slop. Use it freely.");
+  const shareUrl = encodeURIComponent(window.location.href);
+  document.getElementById('share-x').href = `https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}`;
+
+  // Cmd/Ctrl+C anywhere copies the page link
+  document.addEventListener('keydown', (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'c' && !window.getSelection().toString()) {
+      copyLink();
+    }
+  });
+</script>
+
+</body>
+</html>
