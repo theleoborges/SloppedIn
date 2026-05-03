@@ -90,6 +90,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 20px;
+    position: relative;
   }
   .brand {
     display: flex; align-items: center; gap: 12px;
@@ -99,6 +100,38 @@
   .brand .b1 { color: var(--ink); }
   .brand .b2 { color: var(--teal-deep); }
   .nav-right { display: flex; align-items: center; gap: 8px; font-family: "JetBrains Mono", monospace; font-size: 12px; }
+  .nav-toggle {
+    display: none;
+    background: var(--paper);
+    border: 1.5px solid var(--ink);
+    border-radius: 999px;
+    width: 40px; height: 40px;
+    cursor: pointer;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+    transition: background 120ms ease, transform 120ms ease;
+  }
+  .nav-toggle:hover { background: var(--slime); transform: translate(-1px, -1px); }
+  .nav-toggle .bars {
+    position: relative;
+    display: block;
+    width: 18px; height: 2px;
+    background: var(--ink);
+    transition: background 120ms ease;
+  }
+  .nav-toggle .bars::before,
+  .nav-toggle .bars::after {
+    content: "";
+    position: absolute; left: 0; right: 0;
+    height: 2px; background: var(--ink);
+    transition: transform 160ms ease, top 160ms ease;
+  }
+  .nav-toggle .bars::before { top: -6px; }
+  .nav-toggle .bars::after  { top:  6px; }
+  .nav-toggle[aria-expanded="true"] .bars { background: transparent; }
+  .nav-toggle[aria-expanded="true"] .bars::before { top: 0; transform: rotate(45deg); }
+  .nav-toggle[aria-expanded="true"] .bars::after  { top: 0; transform: rotate(-45deg); }
   .pill {
     border: 1.5px solid var(--ink);
     background: var(--paper);
@@ -590,6 +623,29 @@
     .hero, .downloads, .howto, .share, .why { padding-left: 20px; padding-right: 20px; }
     .x { display: none; }
   }
+
+  @media (max-width: 640px) {
+    .nav-toggle { display: inline-flex; }
+    .nav-right {
+      position: absolute;
+      top: calc(100% - 4px);
+      right: 20px;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 6px;
+      background: var(--paper);
+      border: 2px solid var(--ink);
+      border-radius: 14px;
+      padding: 10px;
+      box-shadow: 4px 4px 0 var(--ink);
+      font-size: 13px;
+      z-index: 50;
+      display: none;
+      min-width: 180px;
+    }
+    .nav-right.open { display: flex; }
+    .nav-right .pill { text-align: center; padding: 9px 14px; }
+  }
 </style>
 </head>
 <body>
@@ -613,7 +669,10 @@
     <img src="public/assets/sloppedin-logo.png" alt="" />
     <span><span class="b1">Slopped</span><span class="b2">In</span></span>
   </div>
-  <div class="nav-right">
+  <button class="nav-toggle" id="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="primary-nav">
+    <span class="bars" aria-hidden="true"></span>
+  </button>
+  <div class="nav-right" id="primary-nav">
     <a class="pill" href="#how-to">how to use</a>
     <a class="pill" href="#downloads">download ↓</a>
     <a class="pill" href="#why">backstory</a>
@@ -840,6 +899,33 @@
     if ((e.metaKey || e.ctrlKey) && e.key === 'c' && !window.getSelection().toString()) {
       copyLink();
     }
+  });
+
+  // Mobile nav toggle
+  const navToggle = document.getElementById('nav-toggle');
+  const navMenu = document.getElementById('primary-nav');
+  function closeNav() {
+    navMenu.classList.remove('open');
+    navToggle.setAttribute('aria-expanded', 'false');
+    navToggle.setAttribute('aria-label', 'Open menu');
+  }
+  function openNav() {
+    navMenu.classList.add('open');
+    navToggle.setAttribute('aria-expanded', 'true');
+    navToggle.setAttribute('aria-label', 'Close menu');
+  }
+  navToggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    navMenu.classList.contains('open') ? closeNav() : openNav();
+  });
+  navMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', closeNav));
+  document.addEventListener('click', (e) => {
+    if (navMenu.classList.contains('open') && !navMenu.contains(e.target) && !navToggle.contains(e.target)) {
+      closeNav();
+    }
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && navMenu.classList.contains('open')) closeNav();
   });
 </script>
 
