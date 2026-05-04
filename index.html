@@ -675,6 +675,7 @@
   <div class="nav-right" id="primary-nav">
     <a class="pill" href="#how-to">how to use</a>
     <a class="pill" href="#downloads">download ↓</a>
+    <a class="pill" href="badge.html">make a badge</a>
     <a class="pill" href="#why">backstory</a>
   </div>
 </nav>
@@ -701,10 +702,10 @@
         Grab the logo
         <span class="kbd">↓</span>
       </a>
-      <button class="btn" id="copy-link-btn" type="button">
-        Copy share link
-        <span class="kbd">⌘ C</span>
-      </button>
+      <a class="btn" href="badge.html">
+        Make a badge
+        <span class="kbd">↗</span>
+      </a>
     </div>
 
     <div class="meta-row">
@@ -886,7 +887,6 @@
       showToast('Link copied · go forth and slop');
     }
   }
-  document.getElementById('copy-link-btn').addEventListener('click', copyLink);
   document.querySelectorAll('[data-share="copy"]').forEach(b => b.addEventListener('click', copyLink));
 
   // Tweet/post intent

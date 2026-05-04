@@ -7,7 +7,27 @@
 <meta name="description" content="Slap an #OpenToSlop badge on your profile photo. Free. Client-side. Nothing leaves your device." />
 
 <link rel="icon" type="image/png" sizes="32x32" href="public/assets/favicon-32.png" />
+<link rel="icon" type="image/png" sizes="256x256" href="public/assets/sloppedin-256.png" />
 <link rel="apple-touch-icon" sizes="180x180" href="public/assets/sloppedin-180.png" />
+
+<!-- Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="SloppedIn" />
+<meta property="og:title" content="SloppedIn — make your #OpenToSlop badge" />
+<meta property="og:description" content="Slap an #OpenToSlop badge on your profile photo. 100% client-side — your photo never leaves the browser." />
+<meta property="og:url" content="https://sloppedin.lol/badge.html" />
+<meta property="og:image" content="https://sloppedin.lol/public/assets/sloppedin-og.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="The SloppedIn slime mascot — your new AI-slop reaction button." />
+
+<!-- Twitter / X -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@theleoborges" />
+<meta name="twitter:creator" content="@theleoborges" />
+<meta name="twitter:title" content="SloppedIn — make your #OpenToSlop badge" />
+<meta name="twitter:description" content="Slap an #OpenToSlop badge on your profile photo. 100% client-side — your photo never leaves the browser." />
+<meta name="twitter:image" content="https://sloppedin.lol/public/assets/sloppedin-og.png" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -332,7 +352,20 @@
     font-size: 12px;
     color: var(--ink-soft);
   }
-  .footer-inner a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+  .footer-inner a { color: var(--ink); text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+  .socials { display: inline-flex; gap: 8px; align-items: center; }
+  .socials a {
+    width: 34px; height: 34px;
+    display: inline-grid; place-items: center;
+    border: 1.5px solid var(--ink);
+    border-radius: 50%;
+    color: var(--ink);
+    background: var(--paper);
+    text-decoration: none;
+    transition: transform 120ms ease, background 120ms ease, color 120ms ease;
+  }
+  .socials a:hover { background: var(--ink); color: var(--paper); transform: translate(-1px, -1px); }
+  .socials svg { width: 16px; height: 16px; display: block; }
 
   /* toast */
   .toast {
@@ -441,7 +474,18 @@
 <footer>
   <div class="footer-inner">
     <span>© 2026 SloppedIn · a parody · made by <a href="https://leonardoborges.com" target="_blank" rel="noopener">Leo Borges</a>, for humans</span>
-    <a href="/" class="pill">← home</a>
+    <span class="socials">
+      <a href="https://www.linkedin.com/in/theleoborges/" target="_blank" rel="noopener" aria-label="LinkedIn">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.37V9h3.41v1.56h.05c.47-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z"/></svg>
+      </a>
+      <a href="https://x.com/theleoborges" target="_blank" rel="noopener" aria-label="X">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.45-6.231zm-1.161 17.52h1.833L7.084 4.126H5.117l11.966 15.644z"/></svg>
+      </a>
+      <a href="https://www.threads.com/theleoborges" target="_blank" rel="noopener" aria-label="Threads">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.46 11.13a8.6 8.6 0 0 0-.32-.15c-.19-3.5-2.1-5.5-5.31-5.52h-.04c-1.92 0-3.51.82-4.5 2.31l1.77 1.21c.74-1.12 1.9-1.36 2.74-1.36h.03c1.04.01 1.83.31 2.34.9.37.43.62 1.02.74 1.77-.92-.16-1.92-.2-2.99-.14-3.01.17-4.95 1.93-4.82 4.37.07 1.24.69 2.3 1.74 2.99.89.58 2.04.87 3.23.8 1.58-.09 2.81-.69 3.68-1.79.66-.83 1.07-1.91 1.26-3.27.74.45 1.29 1.04 1.6 1.75.51 1.21.54 3.2-1.08 4.82-1.42 1.42-3.13 2.03-5.71 2.05-2.86-.02-5.03-.94-6.44-2.74C5.06 17.43 4.4 15.27 4.37 12c.03-3.27.69-5.43 2.04-7.13C7.82 3.07 9.99 2.15 12.85 2.13c2.88.02 5.08.95 6.55 2.75.72.89 1.27 2 1.62 3.31l1.96-.52c-.43-1.62-1.11-3.01-2.05-4.16C19.07 1.21 16.39.04 12.86.02h-.01C9.32.04 6.66 1.22 4.97 3.51 3.46 5.55 2.69 8.39 2.66 12c.03 3.61.8 6.45 2.31 8.49 1.69 2.29 4.35 3.47 7.88 3.49h.01c3.14-.02 5.36-.85 7.18-2.67 2.39-2.38 2.32-5.36 1.53-7.19-.57-1.31-1.65-2.38-3.13-3.09zm-5.52 4.41c-1.32.07-2.69-.52-2.76-1.79-.05-.94.67-1.99 2.84-2.12.25-.01.49-.02.73-.02.79 0 1.53.08 2.2.22-.25 3.13-1.72 3.65-3.01 3.71z"/></svg>
+      </a>
+    </span>
+    <span>not affiliated with any platform · all trademarks belong to their respective overlords</span>
   </div>
 </footer>
 
