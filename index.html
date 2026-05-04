@@ -595,6 +595,85 @@
   .socials a:hover { background: var(--ink); color: var(--paper); transform: translate(-1px, -1px); }
   .socials svg { width: 16px; height: 16px; display: block; }
 
+  /* — Sticker modal — */
+  .sticker-modal {
+    border: 2px solid var(--ink);
+    border-radius: 18px;
+    padding: 0;
+    max-width: 460px;
+    width: calc(100% - 32px);
+    background: var(--paper);
+    box-shadow: 8px 8px 0 var(--ink);
+    color: var(--ink);
+  }
+  .sticker-modal::backdrop { background: rgba(15, 42, 40, 0.55); }
+  .sticker-modal[open] { animation: pop 180ms ease; }
+  @keyframes pop {
+    from { transform: scale(0.96); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+  }
+  .sticker-modal-inner { position: relative; padding: 24px; }
+  .sticker-modal h3 {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0 0 4px;
+    padding-right: 36px;
+  }
+  .sticker-modal .sub {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin: 0 0 16px;
+  }
+  .sticker-preview {
+    border: 1.5px solid var(--ink);
+    border-radius: 12px;
+    background: var(--paper-2);
+    overflow: hidden;
+    margin: 0 0 16px;
+  }
+  .sticker-preview img { width: 100%; height: auto; display: block; }
+  .sticker-modal p.body {
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    margin: 0 0 16px;
+  }
+  .sticker-modal p.body b { color: var(--ink); }
+  .sticker-modal .heads-up {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    color: var(--ink-soft);
+    background: var(--slime-soft);
+    border: 1px solid var(--slime);
+    padding: 7px 12px;
+    border-radius: 999px;
+    margin: 0 0 18px;
+  }
+  .sticker-modal-actions {
+    display: flex; gap: 10px; flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .sticker-modal .close-x {
+    position: absolute;
+    top: 16px; right: 16px;
+    background: var(--paper);
+    border: 1.5px solid var(--ink);
+    border-radius: 50%;
+    width: 30px; height: 30px;
+    display: grid; place-items: center;
+    cursor: pointer;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 16px;
+    line-height: 1;
+    padding: 0;
+    color: var(--ink);
+    transition: background 120ms ease, transform 120ms ease;
+  }
+  .sticker-modal .close-x:hover { background: var(--slime); transform: translate(-1px, -1px); }
+
   /* Toast */
   .toast {
     position: fixed; left: 50%; bottom: 28px;
@@ -676,6 +755,7 @@
     <a class="pill" href="#how-to">how to use</a>
     <a class="pill" href="#downloads">download ↓</a>
     <a class="pill" href="badge.html">make a badge</a>
+    <a class="pill" href="https://shop.willworkfortokens.com/en-aud/products/sloppedin-sticker-sheet" data-stickers target="_blank" rel="noopener">print stickers</a>
     <a class="pill" href="#why">backstory</a>
   </div>
 </nav>
@@ -860,6 +940,25 @@
   </div>
 </footer>
 
+<dialog class="sticker-modal" id="stickers-modal" aria-labelledby="stickers-title">
+  <div class="sticker-modal-inner">
+    <button class="close-x" type="button" data-close aria-label="Close">×</button>
+    <h3 id="stickers-title">Print yourself some slop.</h3>
+    <p class="sub">// limited-run sticker sheet</p>
+    <div class="sticker-preview">
+      <img src="public/assets/sticker-sheet.avif" alt="A sheet of SloppedIn vinyl stickers" />
+    </div>
+    <p class="body">
+      A whole sheet of SloppedIn stickers. Slap them on laptops, water bottles, and the foreheads of thought leaders. Sold through <b>Will Work For Tokens</b>.
+    </p>
+    <p class="heads-up">↗ opens shop.willworkfortokens.com in a new tab</p>
+    <div class="sticker-modal-actions">
+      <button class="btn" type="button" data-close>Maybe later</button>
+      <a class="btn primary" href="https://shop.willworkfortokens.com/en-aud/products/sloppedin-sticker-sheet" target="_blank" rel="noopener" data-close>Take me to the shop ↗</a>
+    </div>
+  </div>
+</dialog>
+
 <div class="toast" id="toast">Link copied to clipboard</div>
 
 <script>
@@ -899,6 +998,23 @@
     if ((e.metaKey || e.ctrlKey) && e.key === 'c' && !window.getSelection().toString()) {
       copyLink();
     }
+  });
+
+  // Sticker modal
+  const stickersModal = document.getElementById('stickers-modal');
+  document.querySelectorAll('[data-stickers]').forEach(el => {
+    el.addEventListener('click', (e) => {
+      if (typeof stickersModal.showModal !== 'function') return; // fall through to href
+      e.preventDefault();
+      closeNav();
+      stickersModal.showModal();
+    });
+  });
+  stickersModal.querySelectorAll('[data-close]').forEach(b => {
+    b.addEventListener('click', () => stickersModal.close());
+  });
+  stickersModal.addEventListener('click', (e) => {
+    if (e.target === stickersModal) stickersModal.close();
   });
 
   // Mobile nav toggle
