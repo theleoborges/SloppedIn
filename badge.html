@@ -1,0 +1,671 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SloppedIn — make your #OpenToSlop badge</title>
+<meta name="description" content="Slap an #OpenToSlop badge on your profile photo. Free. Client-side. Nothing leaves your device." />
+
+<link rel="icon" type="image/png" sizes="32x32" href="public/assets/favicon-32.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="public/assets/sloppedin-180.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --teal: #3FAFA3;
+    --teal-deep: #2C8A80;
+    --slime: #C8E8B0;
+    --slime-soft: #E5F2D6;
+    --ink: #0F2A28;
+    --ink-soft: #1F4D4A;
+    --paper: #F4F1E8;
+    --paper-2: #ECE7D6;
+    --hot: #FF5C3A;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "Space Grotesk", system-ui, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+  .mono { font-family: "JetBrains Mono", ui-monospace, monospace; }
+
+  /* nav */
+  nav {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 22px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  .brand {
+    display: flex; align-items: center; gap: 12px;
+    font-weight: 700; font-size: 22px; letter-spacing: -0.02em;
+    color: inherit; text-decoration: none;
+  }
+  .brand img { width: 36px; height: 36px; border-radius: 50%; display: block; }
+  .brand .b1 { color: var(--ink); }
+  .brand .b2 { color: var(--teal-deep); }
+  .nav-right { display: flex; align-items: center; gap: 8px; font-family: "JetBrains Mono", monospace; font-size: 12px; }
+  .pill {
+    border: 1.5px solid var(--ink);
+    background: var(--paper);
+    border-radius: 999px;
+    padding: 7px 12px;
+    color: var(--ink);
+    text-decoration: none;
+    transition: transform 120ms ease, background 120ms ease;
+  }
+  .pill:hover { background: var(--slime); transform: translate(-1px, -1px); }
+
+  /* hero */
+  .tool-hero {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px 32px 24px;
+  }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    color: var(--ink-soft);
+    background: var(--slime-soft);
+    border: 1px solid var(--slime);
+    padding: 8px 12px;
+    border-radius: 999px;
+    margin-bottom: 16px;
+  }
+  .eyebrow .blob { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); }
+  h1 {
+    font-size: clamp(36px, 5vw, 60px);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin: 0 0 14px;
+  }
+  h1 .green { color: var(--teal-deep); }
+  .lede {
+    font-size: 17px;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    max-width: 620px;
+    margin: 0;
+  }
+  .lede b { color: var(--ink); }
+
+  /* tool grid */
+  .tool {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px 32px 64px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 360px;
+    gap: 36px;
+    align-items: start;
+  }
+
+  /* canvas frame */
+  .stage {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    width: 100%;
+    background: var(--paper-2);
+    border: 2px solid var(--ink);
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 8px 8px 0 var(--ink);
+    display: grid;
+    place-items: center;
+  }
+  .stage::before {
+    content: "";
+    position: absolute; inset: 0;
+    background-image: radial-gradient(var(--ink) 1px, transparent 1px);
+    background-size: 18px 18px;
+    opacity: 0.07;
+    pointer-events: none;
+  }
+  .stage canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    touch-action: none;
+    cursor: grab;
+    border-radius: inherit;
+  }
+  .stage canvas.dragging { cursor: grabbing; }
+  .stage.empty canvas { cursor: pointer; }
+
+  .dropzone {
+    position: absolute;
+    inset: 24px;
+    border: 2px dashed rgba(15, 42, 40, 0.35);
+    border-radius: 22px;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    padding: 24px;
+    pointer-events: none;
+    transition: border-color 160ms ease, background 160ms ease;
+  }
+  .stage.empty .dropzone { background: rgba(244, 241, 232, 0.6); }
+  .stage.drag .dropzone { border-color: var(--teal-deep); background: var(--slime-soft); }
+  .dropzone .icon {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: var(--ink); color: var(--paper);
+    display: grid; place-items: center;
+    font-size: 28px;
+    margin: 0 auto 14px;
+  }
+  .dropzone strong {
+    display: block;
+    font-size: 18px;
+    margin-bottom: 6px;
+    letter-spacing: -0.01em;
+  }
+  .dropzone span {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+  }
+  .stage:not(.empty) .dropzone { display: none; }
+
+  /* controls */
+  .controls {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    border: 2px solid var(--ink);
+    border-radius: 20px;
+    padding: 24px;
+    background: var(--paper);
+    box-shadow: 6px 6px 0 var(--ink);
+  }
+  .controls h3 {
+    margin: 0;
+    font-size: 12px;
+    font-family: "JetBrains Mono", monospace;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-weight: 600;
+  }
+  .group { display: flex; flex-direction: column; gap: 10px; }
+
+  /* style picker */
+  .styles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .style-pick {
+    position: relative;
+    cursor: pointer;
+    border: 2px solid var(--ink);
+    border-radius: 14px;
+    padding: 10px;
+    background: var(--paper);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: center;
+    transition: transform 120ms ease, background 120ms ease;
+  }
+  .style-pick:hover { transform: translate(-1px, -1px); background: var(--slime-soft); }
+  .style-pick input { position: absolute; opacity: 0; pointer-events: none; }
+  .style-pick img {
+    width: 100%; height: auto;
+    aspect-ratio: 1;
+    object-fit: contain;
+    border-radius: 999px;
+    background:
+      linear-gradient(45deg, #d8d3c4 25%, transparent 25%) 0 0/14px 14px,
+      linear-gradient(-45deg, #d8d3c4 25%, transparent 25%) 0 7px/14px 14px,
+      linear-gradient(45deg, transparent 75%, #d8d3c4 75%) 7px -7px/14px 14px,
+      linear-gradient(-45deg, transparent 75%, #d8d3c4 75%) -7px 0/14px 14px,
+      var(--paper-2);
+  }
+  .style-pick span {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    color: var(--ink-soft);
+    text-align: center;
+  }
+  .style-pick:has(input:checked) {
+    background: var(--slime);
+    box-shadow: 3px 3px 0 var(--ink);
+  }
+
+  /* zoom slider */
+  .slider-row { display: flex; align-items: center; gap: 12px; }
+  .slider-row .label {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    color: var(--ink-soft);
+    width: 52px;
+    flex: 0 0 52px;
+  }
+  input[type="range"] {
+    flex: 1;
+    -webkit-appearance: none; appearance: none;
+    background: transparent;
+    height: 24px;
+  }
+  input[type="range"]::-webkit-slider-runnable-track {
+    height: 6px; background: var(--paper-2); border: 1.5px solid var(--ink); border-radius: 999px;
+  }
+  input[type="range"]::-moz-range-track {
+    height: 6px; background: var(--paper-2); border: 1.5px solid var(--ink); border-radius: 999px;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--teal);
+    border: 2px solid var(--ink);
+    margin-top: -10px;
+    cursor: pointer;
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--teal);
+    border: 2px solid var(--ink);
+    cursor: pointer;
+  }
+  .hint { font-family: "JetBrains Mono", monospace; font-size: 11px; color: var(--ink-soft); margin: 0; }
+
+  /* buttons */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    border: 2px solid var(--ink);
+    border-radius: 14px;
+    padding: 12px 18px;
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    background: var(--paper);
+    color: var(--ink);
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: 4px 4px 0 var(--ink);
+    transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+    width: 100%;
+  }
+  .btn:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--ink); }
+  .btn:active { transform: translate(2px, 2px); box-shadow: 0 0 0 var(--ink); }
+  .btn:disabled {
+    opacity: 0.4; cursor: not-allowed; box-shadow: 4px 4px 0 var(--ink);
+    transform: none;
+  }
+  .btn.primary { background: var(--teal); color: var(--paper); }
+  .btn.primary:hover { background: var(--teal-deep); }
+  .btn.ghost { background: transparent; box-shadow: none; }
+  .btn.ghost:hover { background: var(--slime-soft); box-shadow: none; transform: none; }
+  .actions { display: flex; flex-direction: column; gap: 10px; }
+
+  .privacy {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    border-top: 1px dashed rgba(15, 42, 40, 0.2);
+    padding-top: 14px;
+    margin: 0;
+  }
+  .privacy .check { color: var(--teal-deep); font-weight: 700; margin-right: 4px; }
+
+  footer {
+    padding: 24px 32px 40px;
+    background: var(--paper);
+    border-top: 1px solid rgba(15, 42, 40, 0.15);
+  }
+  .footer-inner {
+    max-width: 1200px; margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 16px; flex-wrap: wrap;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+  .footer-inner a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+
+  /* toast */
+  .toast {
+    position: fixed; left: 50%; bottom: 28px;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--ink); color: var(--paper);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 13px;
+    padding: 12px 18px;
+    border-radius: 999px;
+    border: 2px solid var(--slime);
+    opacity: 0;
+    transition: opacity 200ms ease, transform 200ms ease;
+    pointer-events: none;
+    z-index: 100;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 900px) {
+    .tool { grid-template-columns: 1fr; gap: 24px; }
+    nav { padding: 16px 20px; }
+    .tool-hero, .tool { padding-left: 20px; padding-right: 20px; }
+    .controls { box-shadow: 4px 4px 0 var(--ink); }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="brand" href="/">
+    <img src="public/assets/sloppedin-logo.png" alt="" />
+    <span><span class="b1">Slopped</span><span class="b2">In</span></span>
+  </a>
+  <div class="nav-right">
+    <a class="pill" href="/">← back to home</a>
+  </div>
+</nav>
+
+<section class="tool-hero">
+  <div class="eyebrow">
+    <span class="blob"></span>
+    NEW · BETA · SLAP IT ON YOUR FEED
+  </div>
+  <h1>Make your <span class="green">#OpenToSlop</span> badge.</h1>
+  <p class="lede">
+    Drop in a photo, position your face, hit download. <b>Everything happens in your browser</b> &mdash;
+    nothing is uploaded, nothing is stored, no LLM was harmed.
+  </p>
+</section>
+
+<section class="tool">
+  <div class="stage empty" id="stage">
+    <canvas id="preview" width="1024" height="1024" aria-label="Badge preview"></canvas>
+    <div class="dropzone" id="dropzone">
+      <div>
+        <div class="icon" aria-hidden="true">↑</div>
+        <strong>Drop a photo</strong>
+        <span>or click anywhere &middot; png · jpg · webp<br/>your photo never leaves the browser</span>
+      </div>
+    </div>
+    <input type="file" id="file" accept="image/*" hidden />
+  </div>
+
+  <aside class="controls">
+    <div class="group">
+      <h3>1 · Style</h3>
+      <div class="styles">
+        <label class="style-pick">
+          <input type="radio" name="style" value="linkedin" checked />
+          <img src="public/assets/overlay-opentoslop-linkedin.png" alt="" />
+          <span>linkedin green</span>
+        </label>
+        <label class="style-pick">
+          <input type="radio" name="style" value="sloppedin" />
+          <img src="public/assets/overlay-opentoslop-sloppedin.png" alt="" />
+          <span>sloppedin teal</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="group">
+      <h3>2 · Position</h3>
+      <div class="slider-row">
+        <span class="label">zoom</span>
+        <input type="range" id="zoom" min="1" max="3" step="0.01" value="1" />
+      </div>
+      <p class="hint">// drag the photo to reposition</p>
+    </div>
+
+    <div class="group">
+      <h3>3 · Export</h3>
+      <div class="actions">
+        <button class="btn" id="upload-btn" type="button">Choose photo</button>
+        <button class="btn primary" id="download-btn" type="button" disabled>Download PNG</button>
+        <button class="btn ghost" id="reset-btn" type="button" disabled>Start over</button>
+      </div>
+    </div>
+
+    <p class="privacy">
+      <span class="check">✓</span> 100% client-side. The image never leaves your device.<br/>
+      <span class="check">✓</span> 1024 × 1024 PNG with transparent corners.
+    </p>
+  </aside>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <span>© 2026 SloppedIn · a parody · made by <a href="https://leonardoborges.com" target="_blank" rel="noopener">Leo Borges</a>, for humans</span>
+    <a href="/" class="pill">← home</a>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+  const SIZE = 1024;
+  const canvas = document.getElementById('preview');
+  const ctx = canvas.getContext('2d');
+  const stage = document.getElementById('stage');
+  const dropzone = document.getElementById('dropzone');
+  const fileInput = document.getElementById('file');
+  const uploadBtn = document.getElementById('upload-btn');
+  const downloadBtn = document.getElementById('download-btn');
+  const resetBtn = document.getElementById('reset-btn');
+  const zoomInput = document.getElementById('zoom');
+  const styleInputs = document.querySelectorAll('input[name="style"]');
+  const toast = document.getElementById('toast');
+
+  const overlayPaths = {
+    linkedin: 'public/assets/overlay-opentoslop-linkedin.png',
+    sloppedin: 'public/assets/overlay-opentoslop-sloppedin.png',
+  };
+  const overlays = {};
+  let activeStyle = 'linkedin';
+
+  let userImage = null;
+  let baseScale = 1;
+  let userZoom = 1;
+  let offsetX = 0;
+  let offsetY = 0;
+
+  // Pre-load both overlays
+  for (const [key, path] of Object.entries(overlayPaths)) {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => render();
+    img.src = path;
+    overlays[key] = img;
+  }
+
+  function render() {
+    ctx.clearRect(0, 0, SIZE, SIZE);
+
+    if (userImage) {
+      const finalScale = userZoom * baseScale;
+      const w = userImage.naturalWidth * finalScale;
+      const h = userImage.naturalHeight * finalScale;
+      const x = (SIZE - w) / 2 + offsetX;
+      const y = (SIZE - h) / 2 + offsetY;
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(SIZE / 2, SIZE / 2, SIZE / 2, 0, Math.PI * 2);
+      ctx.clip();
+      ctx.drawImage(userImage, x, y, w, h);
+      ctx.restore();
+    }
+
+    const ov = overlays[activeStyle];
+    if (ov && ov.complete && ov.naturalWidth) {
+      ctx.drawImage(ov, 0, 0, SIZE, SIZE);
+    }
+  }
+
+  function clampOffsets() {
+    if (!userImage) return;
+    const finalScale = userZoom * baseScale;
+    const w = userImage.naturalWidth * finalScale;
+    const h = userImage.naturalHeight * finalScale;
+    const maxX = Math.max(0, (w - SIZE) / 2);
+    const maxY = Math.max(0, (h - SIZE) / 2);
+    if (offsetX > maxX) offsetX = maxX;
+    if (offsetX < -maxX) offsetX = -maxX;
+    if (offsetY > maxY) offsetY = maxY;
+    if (offsetY < -maxY) offsetY = -maxY;
+  }
+
+  function loadFile(file) {
+    if (!file || !file.type.startsWith('image/')) {
+      showToast('Please drop an image file');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        userImage = img;
+        baseScale = Math.max(SIZE / img.naturalWidth, SIZE / img.naturalHeight);
+        userZoom = 1;
+        offsetX = 0;
+        offsetY = 0;
+        zoomInput.value = '1';
+        stage.classList.remove('empty');
+        downloadBtn.disabled = false;
+        resetBtn.disabled = false;
+        render();
+      };
+      img.onerror = () => showToast('Could not load that image');
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // File input wiring
+  uploadBtn.addEventListener('click', () => fileInput.click());
+  // Click on the empty stage opens the file picker
+  stage.addEventListener('click', e => {
+    if (stage.classList.contains('empty')) fileInput.click();
+  });
+  fileInput.addEventListener('change', e => {
+    if (e.target.files[0]) loadFile(e.target.files[0]);
+  });
+
+  // Drag & drop
+  ['dragenter', 'dragover'].forEach(evt =>
+    stage.addEventListener(evt, e => {
+      e.preventDefault();
+      stage.classList.add('drag');
+    })
+  );
+  ['dragleave', 'dragend', 'drop'].forEach(evt =>
+    stage.addEventListener(evt, e => {
+      e.preventDefault();
+      stage.classList.remove('drag');
+    })
+  );
+  stage.addEventListener('drop', e => {
+    if (e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]);
+  });
+
+  // Pointer drag to pan
+  let dragging = false;
+  let lastX = 0;
+  let lastY = 0;
+  canvas.addEventListener('pointerdown', e => {
+    if (!userImage) return;
+    dragging = true;
+    canvas.classList.add('dragging');
+    canvas.setPointerCapture(e.pointerId);
+    lastX = e.clientX;
+    lastY = e.clientY;
+  });
+  canvas.addEventListener('pointermove', e => {
+    if (!dragging) return;
+    const rect = canvas.getBoundingClientRect();
+    const ratio = SIZE / rect.width;
+    offsetX += (e.clientX - lastX) * ratio;
+    offsetY += (e.clientY - lastY) * ratio;
+    lastX = e.clientX;
+    lastY = e.clientY;
+    clampOffsets();
+    render();
+  });
+  ['pointerup', 'pointercancel', 'pointerleave'].forEach(evt =>
+    canvas.addEventListener(evt, e => {
+      dragging = false;
+      canvas.classList.remove('dragging');
+    })
+  );
+
+  // Zoom
+  zoomInput.addEventListener('input', e => {
+    userZoom = parseFloat(e.target.value);
+    clampOffsets();
+    render();
+  });
+
+  // Style toggle
+  styleInputs.forEach(inp =>
+    inp.addEventListener('change', e => {
+      activeStyle = e.target.value;
+      render();
+    })
+  );
+
+  // Download
+  downloadBtn.addEventListener('click', () => {
+    canvas.toBlob(blob => {
+      if (!blob) { showToast('Could not export PNG'); return; }
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `opentoslop-${activeStyle}.png`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1500);
+      showToast('Downloaded · go forth and slop');
+    }, 'image/png');
+  });
+
+  // Reset
+  resetBtn.addEventListener('click', () => {
+    userImage = null;
+    offsetX = offsetY = 0;
+    userZoom = 1;
+    zoomInput.value = '1';
+    stage.classList.add('empty');
+    downloadBtn.disabled = true;
+    resetBtn.disabled = true;
+    fileInput.value = '';
+    render();
+  });
+
+  // Toast
+  let toastT;
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastT);
+    toastT = setTimeout(() => toast.classList.remove('show'), 1800);
+  }
+
+  // Paste support
+  window.addEventListener('paste', e => {
+    const item = [...(e.clipboardData?.items || [])].find(i => i.type.startsWith('image/'));
+    if (item) loadFile(item.getAsFile());
+  });
+
+  render();
+})();
+</script>
+
+</body>
+</html>
